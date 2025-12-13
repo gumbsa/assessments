@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Scoring Summary – {{ date }}</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            background-color: #001f3f;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #001f3f;
+            color: white;
+        }
+        .footer {
+            margin-top: 40px;
+            padding: 14px;
+            text-align: center;
+            background-color: #001f3f;
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        a {
+            color: #0033cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Stock Scoring Summary ({{ date }})</h1>
+
+<table>
+    <tr>
+        <th>Ticker</th>
+        {% for f in factor_names %}
+            <th>{{ f }}</th>
+        {% endfor %}
+        <th>Total</th>
+        <th>Report</th>
+    </tr>
+
+    {% for r in results %}
+    <tr>
+        <td><strong>{{ r.ticker }}</strong></td>
+
+        {% for f in r.factors %}
+            <td>{{ f.score }}</td>
+        {% endfor %}
+
+        <td><strong>{{ r.total_score }}</strong></td>
+        <td><a href="{{ r.html_file }}">View Report</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<div class="footer">
+    From Gumbs Enterprise
+</div>
+
+</body>
+</html>

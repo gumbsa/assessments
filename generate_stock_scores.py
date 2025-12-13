@@ -592,6 +592,7 @@ def generate_summary_html(ticker_results, outdir, infile_name=None):
     outpath = os.path.join(outdir, filename)
     with open(outpath, "w", encoding="utf-8") as fh:
         fh.write(rendered)
+    os.system(f'start chrome "{os.path.abspath(outpath)}"')
     return outpath
 
 # ---------------- Main CLI flow ----------------

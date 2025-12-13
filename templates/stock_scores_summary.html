@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Stock Summary Assessment</title>
+<style>
+body { font-family: Arial, sans-serif; margin:20px; }
+table { border-collapse: collapse; width:100%; margin-bottom:20px;}
+th, td { border:1px solid #ccc; padding:6px; text-align:center;}
+th { background:#eee; }
+.footer { text-align:center; background:#001f4d; color:white; padding:10px; margin-top:20px; }
+a { text-decoration:none; color: #003366; }
+</style>
+</head>
+<body>
+<h1>Stock Summary Assessment ({{ date }})</h1>
+<table>
+<tr>
+    <th>Ticker</th>
+    {% for f in factor_names %}<th>{{ f }}</th>{% endfor %}
+    <th>Total (out of {{ max_total }})</th>
+</tr>
+{% for res in results %}
+<tr>
+    <td><a href="{{ res.file }}">{{ res.ticker }}</a></td>
+    {% for f in res.factors %}<td>{{ f.score }}</td>{% endfor %}
+    <td>{{ res.total_score }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<div class="footer">Gumbs Enterprise</div>
+</body>
+</html>
