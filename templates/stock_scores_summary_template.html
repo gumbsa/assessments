@@ -1,78 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Stock Scoring Summary – {{ date }}</title>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-            background-color: #001f3f;
-            color: white;
-            padding: 12px;
-            border-radius: 6px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
-            background-color: #001f3f;
-            color: white;
-        }
-        .footer {
-            margin-top: 40px;
-            padding: 14px;
-            text-align: center;
-            background-color: #001f3f;
-            color: white;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        a {
-            color: #0033cc;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+<meta charset="utf-8">
+<title>Stock Summary Assessment</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin:20px;
+}
+
+table {
+    border-collapse: collapse;
+    width:100%;
+    margin-bottom:20px;
+}
+
+th, td {
+    border:1px solid #ccc;
+    padding:6px;
+    text-align:center;
+}
+
+th {
+    background:#eee;
+}
+
+a {
+    text-decoration:none;
+    color:#003366;
+}
+
+/* ---- Score color bands ---- */
+.score-31-35 { background-color: #2ecc71; }   /* green */
+.score-26-30 { background-color: #a9dfbf; }   /* light green */
+.score-21-25 { background-color: #f9e79f; }   /* yellow */
+.score-16-20 { background-color: #f5cba7; }   /* light orange */
+.score-11-15 { background-color: #f39c12; }   /* orange */
+.score-6-10  { background-color: #f5b7b1; }   /* light red */
+.score-0-5   { background-color: #e74c3c; color:white; } /* red */
+
+.footer {
+    text-align:center;
+    background:#001f4d;
+    color:white;
+    padding:10px;
+    margin-top:20px;
+}
+</style>
 </head>
+
 <body>
 
-<h1>Stock Scoring Summary ({{ date }})</h1>
+<h1>Stock Summary Assessment ({{ date }})</h1>
 
 <table>
-    <tr>
-        <th>Ticker</th>
-        {% for f in factor_names %}
-            <th>{{ f }}</th>
-        {% endfor %}
-        <th>Total</th>
-        <th>Report</th>
-    </tr>
-
-    {% for r in results %}
-    <tr>
-        <td><strong>{{ r.ticker }}</strong></td>
-
-        {% for f in r.factors %}
-            <td>{{ f.score }}</td>
-        {% endfor %}
-
-        <td><strong>{{ r.total_score }}</strong></td>
-        <td><a href="{{ r.html_file }}">View Report</a></td>
-    </tr>
+<tr>
+    <th>Ticker</th>
+    {% for f in factor_names %}
+        <th>{{ f }}</th>
     {% endfor %}
+    <th>Total (out of 35)</th>
+</tr>
+
+{% for res in results %}
+<tr class="
+{% if res.total_score >= 31 %}score-31-35
+{% elif res.total_score >= 26 %}score-26-30
+{% elif res.total_score >= 21 %}score-21-25
+{% elif res.total_score >= 16 %}score-16-20
+{% elif res.total_score >= 11 %}score-11-15
+{% elif res.total_score >= 6  %}score-6-10
+{% else %}score-0-5
+{% endif %}
+">
+    <td><a href="{{ res.file }}">{{ res.ticker }}</a></td>
+    {% for f in res.factors %}
+        <td>{{ f.score }}</td>
+    {% endfor %}
+    <td><strong>{{ res.total_score }}</strong></td>
+</tr>
+{% endfor %}
 </table>
 
 <div class="footer">

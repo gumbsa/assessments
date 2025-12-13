@@ -604,6 +604,7 @@ def main():
     parser.add_argument('--infile', help='File with tickers (one per line)')
     parser.add_argument('--outdir', default=r"C:\Users\gumbs\OneDrive\Documents\StocksResearchData\StockResearchAssessments\Assessments\\", help='Output directory')
     parser.add_argument('--summary', action='store_true', help='Generate summary HTML for multiple tickers')
+    parser.add_argument('--sort', action='store_true', help='Sort results by total score (descending)')
     args = parser.parse_args()
 
     tickers = []
@@ -688,6 +689,8 @@ def main():
         except Exception as e:
             print(f"Failed to write HTML for {t}: {e}", file=sys.stderr)
 
+    if args.sort:
+        results.sort(key=lambda r: r['total_score'], reverse=True)
     if args.summary and results:
         summary_path = generate_summary_html(results, args.outdir, infile_name=args.infile)
         print(f"Summary written to: {summary_path}")

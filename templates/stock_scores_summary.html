@@ -5,30 +5,85 @@
 <title>Stock Summary Assessment</title>
 <style>
 body { font-family: Arial, sans-serif; margin:20px; }
-table { border-collapse: collapse; width:100%; margin-bottom:20px;}
-th, td { border:1px solid #ccc; padding:6px; text-align:center;}
+
+table {
+    border-collapse: collapse;
+    width:100%;
+    margin-bottom:20px;
+}
+
+th, td {
+    border:1px solid #ccc;
+    padding:6px;
+    text-align:center;
+}
+
 th { background:#eee; }
-.footer { text-align:center; background:#001f4d; color:white; padding:10px; margin-top:20px; }
-a { text-decoration:none; color: #003366; }
+
+a { text-decoration:none; color:#003366; }
+
+/* ---- Score color bands ---- */
+.score-31-35 { background-color: #2ecc71; }   /* green */
+.score-26-30 { background-color: #a9dfbf; }   /* light green */
+.score-21-25 { background-color: #f9e79f; }   /* yellow */
+.score-16-20 { background-color: #f5cba7; }   /* light orange */
+.score-11-15 { background-color: #f39c12; }   /* orange */
+.score-6-10  { background-color: #f5b7b1; }   /* light red */
+.score-0-5   { background-color: #e74c3c; }   /* red */
+
+.footer {
+    text-align:center;
+    background:#001f4d;
+    color:white;
+    padding:10px;
+    margin-top:20px;
+}
 </style>
 </head>
+
 <body>
+
 <h1>Stock Summary Assessment ({{ date }})</h1>
+
 <table>
 <tr>
     <th>Ticker</th>
-    {% for f in factor_names %}<th>{{ f }}</th>{% endfor %}
-    <th>Total (out of {{ max_total }})</th>
+    {% for f in factor_names %}
+        <th>{{ f }}</th>
+    {% endfor %}
+    <th>Total (out of 35)</th>
 </tr>
+
 {% for res in results %}
-<tr>
+    {% set s = res.total_score %}
+    {% if s >= 31 %}
+        {% set row_class = "score-31-35" %}
+    {% elif s >= 26 %}
+        {% set row_class = "score-26-30" %}
+    {% elif s >= 21 %}
+        {% set row_class = "score-21-25" %}
+    {% elif s >= 16 %}
+        {% set row_class = "score-16-20" %}
+    {% elif s >= 11 %}
+        {% set row_class = "score-11-15" %}
+    {% elif s >= 6 %}
+        {% set row_class = "score-6-10" %}
+    {% else %}
+        {% set row_class = "score-0-5" %}
+    {% endif %}
+
+<tr class="{{ row_class }}">
     <td><a href="{{ res.file }}">{{ res.ticker }}</a></td>
-    {% for f in res.factors %}<td>{{ f.score }}</td>{% endfor %}
-    <td>{{ res.total_score }}</td>
+    {% for f in res.factors %}
+        <td>{{ f.score }}</td>
+    {% endfor %}
+    <td><strong>{{ res.total_score }}</strong></td>
 </tr>
 {% endfor %}
+
 </table>
 
-<div class="footer">Gumbs Enterprise</div>
+<div class="footer">From Gumbs Enterprise</div>
+
 </body>
 </html>
