@@ -3,34 +3,91 @@
 <head>
 <meta charset="utf-8">
 <title>{{ ticker }} Stock Assessment</title>
+
 <style>
-body { font-family: Arial, sans-serif; margin:20px; }
-h1,h2,h3 { color:#333; }
-table { border-collapse: collapse; width:100%; margin-bottom:20px;}
-th, td { border:1px solid #ccc; padding:6px; text-align:left;}
-th { background:#eee; }
-.optional td { background:#f7f7f7; }
+body { font-family: Arial; margin:20px; background:#f9f9f9; }
+
+h1, h2 { color:#001f4d; }
+
+table {
+    border-collapse: collapse;
+    width:100%;
+    margin-bottom:20px;
+    background:white;
+}
+
+th, td {
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:left;
+}
+
+th {
+    background:#333;
+    color:white;
+}
+
+.optional td { background:#f2f2f2; }
+
 .mono { font-family: monospace; }
-.footer { text-align:center; background:#001f4d; color:white; padding:10px; margin-top:20px; }
+
+/* Score coloring */
+.score-high { color: #004d00; font-weight:bold; }
+.score-mid { color: #666; }
+.score-low { color: #8b0000; font-weight:bold; }
+
+.footer {
+    text-align:center;
+    background:#001f4d;
+    color:white;
+    padding:10px;
+    margin-top:20px;
+}
 </style>
 </head>
+
 <body>
+
 <h1>{{ ticker }} Stock Assessment ({{ date }})</h1>
 
 <h2>Core Factor Scores (0 - 5)</h2>
 <table>
-<tr><th>Factor</th><th>Score</th><th>Rationale / Key Metrics</th></tr>
+<tr>
+    <th>Factor</th>
+    <th>Score</th>
+    <th>Rationale / Key Metrics</th>
+</tr>
+
 {% for f in factors %}
-<tr><td>{{ f.name }}</td><td>{{ f.score }}</td><td>{{ f.rationale }}</td></tr>
+<tr>
+    <td>{{ f.name }}</td>
+    <td class="
+        {% if f.score >= 4 %}score-high
+        {% elif f.score == 3 %}score-mid
+        {% else %}score-low
+        {% endif %}
+    ">
+        {{ f.score }}
+    </td>
+    <td>{{ f.rationale }}</td>
+</tr>
 {% endfor %}
-<tr><th>Total (out of {{ max_total }})</th><th>{{ total_score }}</th><th></th></tr>
+
+<tr>
+    <th>Total (out of {{ max_total }})</th>
+    <th>{{ total_score }}</th>
+    <th></th>
+</tr>
 </table>
 
 <h2>Optional Metrics (for context)</h2>
 <table class="optional">
 <tr><th>Metric</th><th>Value</th></tr>
 {% for k,v in optional_metrics.items() %}
-<tr><td>{{ k }}</td><td class="mono">{{ v }}</td></tr>
+<tr>
+    <td>{{ k }}</td>
+    <td class="mono">{{ v }}</td>
+</tr>
 {% endfor %}
 </table>
 
@@ -38,12 +95,18 @@ th { background:#eee; }
 <table>
 <tr><th>Metric</th><th>Value</th></tr>
 {% for k,v in metrics.items() %}
-<tr><td>{{ k }}</td><td class="mono">{{ v }}</td></tr>
+<tr>
+    <td>{{ k }}</td>
+    <td class="mono">{{ v }}</td>
+</tr>
 {% endfor %}
 </table>
 
-<p><em>Note: Core score out of {{ max_total }}; optional metrics displayed for transparency but not scored.</em></p>
+<p><em>
+Core score out of {{ max_total }}; optional metrics displayed for transparency but not scored.
+</em></p>
 
 <div class="footer">From Gumbs Enterprise</div>
+
 </body>
 </html>

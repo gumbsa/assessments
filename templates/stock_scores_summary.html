@@ -3,33 +3,44 @@
 <head>
 <meta charset="utf-8">
 <title>Stock Summary Assessment</title>
+
 <style>
-body { font-family: Arial, sans-serif; margin:20px; }
+body { font-family: Arial; margin:20px; background:#f9f9f9; }
+
+h1 { color:#001f4d; }
 
 table {
     border-collapse: collapse;
     width:100%;
     margin-bottom:20px;
+    background:white;
 }
 
 th, td {
-    border:1px solid #ccc;
-    padding:6px;
+    border:1px solid #ddd;
+    padding:8px;
     text-align:center;
 }
 
-th { background:#eee; }
+th {
+    background:#333;
+    color:white;
+}
 
-a { text-decoration:none; color:#003366; }
+a {
+    text-decoration:none;
+    color:#001f4d;
+    font-weight:bold;
+}
 
-/* ---- Score color bands ---- */
-.score-31-35 { background-color: #2ecc71; }   /* green */
-.score-26-30 { background-color: #a9dfbf; }   /* light green */
-.score-21-25 { background-color: #f9e79f; }   /* yellow */
-.score-16-20 { background-color: #f5cba7; }   /* light orange */
-.score-11-15 { background-color: #f39c12; }   /* orange */
-.score-6-10  { background-color: #f5b7b1; }   /* light red */
-.score-0-5   { background-color: #e74c3c; }   /* red */
+/* Score bands */
+.score-31-35 { background-color: #004d00; color:white; }
+.score-26-30 { background-color: #4CAF50; color:white; }
+.score-21-25 { background-color: #9E9E9E; color:white; }
+.score-16-20 { background-color: #FF6B6B; color:white; }
+.score-11-15 { background-color: #cc4444; color:white; }
+.score-6-10  { background-color: #992222; color:white; }
+.score-0-5   { background-color: #5a0000; color:white; }
 
 .footer {
     text-align:center;
@@ -56,6 +67,7 @@ a { text-decoration:none; color:#003366; }
 
 {% for res in results %}
     {% set s = res.total_score %}
+
     {% if s >= 31 %}
         {% set row_class = "score-31-35" %}
     {% elif s >= 26 %}

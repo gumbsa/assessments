@@ -599,25 +599,36 @@ def generate_summary_html(ticker_results, outdir, infile_name=None):
 def main():
     ensure_templates()
 
-    parser = argparse.ArgumentParser(description="Generate stock quality assessments (v4) using yfinance.")
-    parser.add_argument('tickers', nargs='*', help='Ticker symbols')
-    parser.add_argument('--infile', help='File with tickers (one per line)')
+    parser = argparse.ArgumentParser(description="Generate stock quality assessments using yfinance.")
+
+# ✅ NEW STANDARDIZED INPUTS
+    parser.add_argument('-s', '--symbols', nargs='+', help='Ticker symbols (space separated)')
+    parser.add_argument('-f', '--file', help='File with tickers (one per line)')
+
+    # EXISTING
     parser.add_argument('--outdir', default=r"C:\Users\gumbs\OneDrive\Documents\StocksResearchData\StockResearchAssessments\Assessments\\", help='Output directory')
     parser.add_argument('--summary', action='store_true', help='Generate summary HTML for multiple tickers')
     parser.add_argument('--sort', action='store_true', help='Sort results by total score (descending)')
+
     args = parser.parse_args()
 
     tickers = []
-    if args.infile:
-        if not os.path.exists(args.infile):
-            print("Error: infile does not exist", file=sys.stderr)
-            sys.exit(1)
-        with open(args.infile, "r", encoding="utf-8") as fh:
-            tickers.extend([line.strip() for line in fh if line.strip()])
-    if args.tickers:
-        tickers.extend(args.tickers)
 
+    # From file (-f)
+    if args.file:
+        if not os.path.exists(args.file):
+            print("Error: file does not exist", file=sys.stderr)
+            sys.exit(1)
+        with open(args.file, "r", encoding="utf-8") as fh:
+            tickers.extend([line.strip() for line in fh if line.strip()])
+
+    # From symbols (-s)
+    if args.symbols:
+        tickers.extend(args.symbols)
+
+    # Normalize
     tickers = list(dict.fromkeys([t.upper() for t in tickers]))
+
     if not tickers:
         print("No tickers provided", file=sys.stderr)
         sys.exit(1)
@@ -692,7 +703,7 @@ def main():
     if args.sort:
         results.sort(key=lambda r: r['total_score'], reverse=True)
     if args.summary and results:
-        summary_path = generate_summary_html(results, args.outdir, infile_name=args.infile)
+        summary_path = generate_summary_html(results, args.outdir, infile_name=args.file)
         print(f"Summary written to: {summary_path}")
 
 if __name__ == "__main__":
