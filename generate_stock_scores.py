@@ -20,6 +20,10 @@ import math
 import numpy as np
 import yfinance as yf
 from jinja2 import Template
+#from datetime import datetime
+import logging
+import json
+
 
 # ---------------- Template filenames (Option A) ----------------
 TEMPLATES_DIR = "templates"
@@ -28,6 +32,9 @@ TEMPLATE_SUMMARY_FN = "stock_scores_summary.html"
 
 TEMPLATE_TICKER_PATH = os.path.join(TEMPLATES_DIR, TEMPLATE_TICKER_FN)
 TEMPLATE_SUMMARY_PATH = os.path.join(TEMPLATES_DIR, TEMPLATE_SUMMARY_FN)
+
+JSON_DIR = r"C:\Users\gumbs\OneDrive\Documents\StocksResearchData\assessments\JSON"
+os.makedirs(JSON_DIR, exist_ok=True)
 
 # ---------------- Default template contents ----------------
 DEFAULT_TICKER_TEMPLATE = r"""
@@ -595,6 +602,35 @@ def generate_summary_html(ticker_results, outdir, infile_name=None):
     os.system(f'start chrome "{os.path.abspath(outpath)}"')
     return outpath
 
+
+def build_json_output(results):
+    json_output = {}
+
+    for r in results:
+        symbol = r["ticker"]
+        mode = "FUNDAMENTAL"
+
+        if symbol not in json_output:
+            json_output[symbol] = {}
+
+        # Convert factors list → dictionary
+        factor_map = {f["name"]: f["score"] for f in r["factors"]}
+
+        json_total= factor_map.get("Financial Strength") + factor_map.get("Profitability & Efficiency") + factor_map.get("Competitive Advantage") + factor_map.get("Business Model Quality") + factor_map.get("Risk Profile") + factor_map.get("Industry Positioning") + factor_map.get("Market Metrics / Shareholder Return")
+        json_output[symbol][mode] = {
+            "Financial Strength": factor_map.get("Financial Strength"),
+            "Profitability & Efficiency": factor_map.get("Profitability & Efficiency"),
+            "Competitive Advantage": factor_map.get("Competitive Advantage"),
+            "Business Model Quality": factor_map.get("Business Model Quality"),
+            "Risk Profile": factor_map.get("Risk Profile"),
+            "Industry Positioning": factor_map.get("Industry Positioning"),
+            "Market Metrics / Shareholder Return": factor_map.get("Market Metrics / Shareholder Return"),
+            "Total_Score": json_total
+        }
+
+    return json_output
+
+
 # ---------------- Main CLI flow ----------------
 def main():
     ensure_templates()
@@ -609,6 +645,11 @@ def main():
     parser.add_argument('--outdir', default=r"C:\Users\gumbs\OneDrive\Documents\StocksResearchData\StockResearchAssessments\Assessments\\", help='Output directory')
     parser.add_argument('--summary', action='store_true', help='Generate summary HTML for multiple tickers')
     parser.add_argument('--sort', action='store_true', help='Sort results by total score (descending)')
+
+    parser.add_argument(
+    "--json-out",
+        help="Write JSON output file (optional custom filename)"
+    )
 
     args = parser.parse_args()
 
@@ -705,6 +746,32 @@ def main():
     if args.summary and results:
         summary_path = generate_summary_html(results, args.outdir, infile_name=args.file)
         print(f"Summary written to: {summary_path}")
+
+    # Deal with JSON
+
+    json_data = build_json_output(results)
+
+    json_data = {
+        "run_info": {
+            "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "mode": "FUNDAMENTALS",
+            "symbols": tickers
+        },
+        "data": build_json_output(results)
+    }
+
+    #date_str = datetime.datetime.now().strftime("%Y%m%d")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+
+    if args.json_out:
+        json_file = os.path.join(JSON_DIR, args.json_out)
+    else:
+        json_file = os.path.join(JSON_DIR, f"assessments_FUNDAMENTALS_{timestamp}.json")
+
+    with open(json_file, "w") as f:
+        json.dump(json_data, f, indent=2)
+
+    logging.info(f"JSON output written to {json_file}")
 
 if __name__ == "__main__":
     main()
